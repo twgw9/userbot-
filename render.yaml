@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: muserbot-pro
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: python3 reuserbot/main.py
+    envVars:
+      - key: API_ID
+        sync: false
+      - key: API_HASH
+        sync: false
+      - key: BOT_TOKEN
+        sync: false
+      - key: ADMIN_IDS
+        sync: false
+      - key: SPECIAL_ADMIN_ID
+        sync: false
+      - key: BOT_MASTER_PASSWORD
+        generateValue: true
