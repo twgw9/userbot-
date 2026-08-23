@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  muserbot:
+    build: .
+    container_name: muserbot_master
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - ./data:/app/data
+      - ./master_bot.db:/app/master_bot.db
+    ports:
+      - "8000:8000"
+    command: python3 reuserbot/main.py

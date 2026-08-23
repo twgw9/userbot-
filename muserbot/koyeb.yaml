@@ -1,0 +1,12 @@
+name: muserbot-pro
+type: web
+env:
+  - key: PORT
+    value: "8000"
+build:
+  type: docker
+run:
+  command: python3 reuserbot/main.py
+ports:
+  - port: 8000
+    protocol: http
