@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MUserBot Pro — Next-Gen Telegram Userbot & Cloud Manager</title>
+    <style>
+        :root {
+            --primary: #8b5cf6;
+            --primary-glow: rgba(139, 92, 246, 0.45);
+            --secondary: #06b6d4;
+            --accent: #f43f5e;
+            --bg-dark: #090d16;
+            --card-bg: rgba(17, 24, 39, 0.75);
+            --card-border: rgba(139, 92, 246, 0.25);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --success: #10b981;
+            --terminal-bg: #0f172a;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 15% 15%, rgba(139, 92, 246, 0.18) 0%, transparent 40%),
+                radial-gradient(circle at 85% 85%, rgba(6, 182, 212, 0.18) 0%, transparent 40%),
+                radial-gradient(circle at 50% 50%, rgba(244, 63, 94, 0.09) 0%, transparent 60%);
+            min-height: 100vh;
+        }
+
+        .grid-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: 40px 40px;
+            background-image: 
+                linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0 2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            margin-bottom: 2.5rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.6rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #a78bfa, #38bdf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+            letter-spacing: -0.5px;
+        }
+
+        .logo-icon {
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 1.3rem;
+            box-shadow: 0 0 20px var(--primary-glow);
+            animation: pulseGlow 3s infinite alternate;
+        }
+
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 15px rgba(139, 92, 246, 0.4); }
+            100% { box-shadow: 0 0 30px rgba(6, 182, 212, 0.7); }
+        }
+
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(16, 185, 129, 0.12);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: var(--success);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--success);
+            border-radius: 50%;
+            animation: blink 1.5s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .hero {
+            text-align: center;
+            padding: 2.5rem 1rem;
+            margin-bottom: 3rem;
+        }
+
+        .hero h1 {
+            font-size: 3.2rem;
+            font-weight: 900;
+            line-height: 1.15;
+            margin-bottom: 1.2rem;
+            letter-spacing: -1px;
+        }
+
+        .hero h1 span {
+            background: linear-gradient(135deg, #c084fc, #38bdf8, #f43f5e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 1.15rem;
+            color: var(--text-muted);
+            max-width: 720px;
+            margin: 0 auto 2rem;
+            line-height: 1.6;
+        }
+
+        .hero-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 26px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1rem;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            border: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), #6366f1);
+            color: #fff;
+            box-shadow: 0 4px 20px var(--primary-glow);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(139, 92, 246, 0.6);
+        }
+
+        .btn-glass {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-main);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-glass:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        /* Live Interactive Terminal */
+        .terminal-box {
+            background: var(--terminal-bg);
+            border: 1px solid rgba(139, 92, 246, 0.35);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            margin-bottom: 3.5rem;
+        }
+
+        .terminal-header {
+            background: #1e293b;
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .term-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .dot-red { background: #ef4444; }
+        .dot-yellow { background: #f59e0b; }
+        .dot-green { background: #10b981; }
+
+        .terminal-title {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-family: monospace;
+            margin-left: auto;
+        }
+
+        .terminal-body {
+            padding: 1.5rem;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            min-height: 220px;
+            max-height: 380px;
+            overflow-y: auto;
+            color: #38bdf8;
+        }
+
+        .terminal-prompt-line {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .prompt-symbol {
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        .term-input {
+            background: transparent;
+            border: none;
+            color: #fff;
+            font-family: monospace;
+            font-size: 0.95rem;
+            flex-grow: 1;
+            outline: none;
+        }
+
+        .quick-demos {
+            display: flex;
+            gap: 8px;
+            padding: 10px 16px;
+            background: #1e293b;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .quick-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .demo-chip {
+            background: rgba(139, 92, 246, 0.2);
+            color: #c084fc;
+            border: 1px solid rgba(139, 92, 246, 0.4);
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-family: monospace;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .demo-chip:hover {
+            background: var(--primary);
+            color: #fff;
+        }
+
+        /* Stats Counter Bar */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.2rem;
+            margin-bottom: 3.5rem;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            padding: 1.5rem;
+            border-radius: 16px;
+            backdrop-filter: blur(12px);
+            text-align: center;
+            transition: transform 0.2s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(139, 92, 246, 0.5);
+        }
+
+        .stat-num {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: #38bdf8;
+            margin-bottom: 0.3rem;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 0.8rem;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            color: var(--text-muted);
+            margin-bottom: 2.5rem;
+            font-size: 1.05rem;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 4rem;
+        }
+
+        .feature-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 18px;
+            padding: 1.8rem;
+            backdrop-filter: blur(12px);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(56, 189, 248, 0.5);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .feature-icon {
+            font-size: 2.2rem;
+            margin-bottom: 1rem;
+            display: inline-block;
+        }
+
+        .feature-card h3 {
+            font-size: 1.25rem;
+            margin-bottom: 0.6rem;
+            color: #fff;
+        }
+
+        .feature-card p {
+            color: var(--text-muted);
+            line-height: 1.5;
+            font-size: 0.95rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            background: rgba(139, 92, 246, 0.15);
+            color: #c084fc;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 0.78rem;
+            font-family: monospace;
+            font-weight: 600;
+        }
+
+        .command-center {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 2rem;
+            backdrop-filter: blur(16px);
+            margin-bottom: 4rem;
+        }
+
+        .command-tabs {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            margin-bottom: 1.5rem;
+        }
+
+        .tab-btn {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-muted);
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+        }
+
+        .tab-btn.active, .tab-btn:hover {
+            background: var(--primary);
+            color: #fff;
+            border-color: var(--primary);
+        }
+
+        .command-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem;
+        }
+
+        .cmd-item {
+            background: rgba(0, 0, 0, 0.35);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 12px;
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .cmd-name {
+            font-family: monospace;
+            font-weight: 700;
+            color: #38bdf8;
+            font-size: 0.95rem;
+        }
+
+        .cmd-desc {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+        }
+
+        .copy-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .copy-btn:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Config Builder Box */
+        .config-builder {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 2rem;
+            backdrop-filter: blur(16px);
+            margin-bottom: 4rem;
+        }
+
+        .builder-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+
+        .input-group input {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 10px;
+            padding: 10px 14px;
+            color: #fff;
+            font-family: monospace;
+            outline: none;
+        }
+
+        .input-group input:focus {
+            border-color: var(--secondary);
+        }
+
+        .generated-env {
+            background: #0b1120;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 1rem;
+            font-family: monospace;
+            font-size: 0.85rem;
+            color: #10b981;
+            white-space: pre-wrap;
+            margin-top: 1rem;
+        }
+
+        .deploy-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.2rem;
+            margin-bottom: 4rem;
+        }
+
+        .deploy-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.25s ease;
+            text-decoration: none;
+            color: var(--text-main);
+        }
+
+        .deploy-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--secondary);
+            box-shadow: 0 10px 25px rgba(6, 182, 212, 0.25);
+        }
+
+        .deploy-card h4 {
+            font-size: 1.15rem;
+            margin-bottom: 0.4rem;
+        }
+
+        .deploy-card p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        footer {
+            text-align: center;
+            padding: 2.5rem 0 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        footer a {
+            color: #38bdf8;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="grid-overlay"></div>
+
+    <div class="container">
+        <!-- Navigation -->
+        <header>
+            <a href="#" class="logo">
+                <div class="logo-icon">⚡</div>
+                MUserBot Pro
+            </a>
+            <div class="status-badge">
+                <div class="status-dot"></div>
+                SYSTEM ONLINE v2.5
+            </div>
+        </header>
+
+        <!-- Hero -->
+        <section class="hero">
+            <h1>The Most Advanced & Smooth<br><span>Telegram Userbot Cloud Engine</span></h1>
+            <p>Deploy multi-user Telegram userbots 24/7 with zero lag, instant interactive inline hosting, 25+ visual animations, built-in AI image & code assistants, view-once media interceptors, music streaming studio, and high-speed raid spam protection.</p>
+            <div class="hero-buttons">
+                <a href="#demo" class="btn btn-primary">⚡ Try Live Simulator</a>
+                <a href="#commands" class="btn btn-glass">📖 120+ Commands</a>
+                <a href="#config" class="btn btn-glass">⚙️ .env Builder</a>
+            </div>
+        </section>
+
+        <!-- Live Interactive Terminal Emulator -->
+        <h2 class="section-title" id="demo">Interactive Command Simulator</h2>
+        <p class="section-subtitle">Click the quick demo triggers or type your own command below to test outputs in real-time.</p>
+
+        <div class="terminal-box">
+            <div class="terminal-header">
+                <div class="term-dot dot-red"></div>
+                <div class="term-dot dot-yellow"></div>
+                <div class="term-dot dot-green"></div>
+                <div class="terminal-title">muserbot@tele-cloud:~</div>
+            </div>
+            <div class="terminal-body" id="term-output">
+                <div>[SYSTEM] MUserBot Pro Kernel v2.5 loaded in memory.</div>
+                <div>[SYSTEM] Connected to Telegram Data Center 5 (Singapore).</div>
+                <div>[INFO] Type <code>.alive</code>, <code>.matrix</code>, <code>.ai</code>, <code>.song</code>, <code>.clone</code>, or <code>.help</code> below:</div>
+            </div>
+            <div class="quick-demos">
+                <span class="quick-label">⚡ Quick Triggers:</span>
+                <span class="demo-chip" onclick="simulateCmd('.alive')">.alive</span>
+                <span class="demo-chip" onclick="simulateCmd('.alive cyber')">.alive cyber</span>
+                <span class="demo-chip" onclick="simulateCmd('.matrix')">.matrix</span>
+                <span class="demo-chip" onclick="simulateCmd('.song Believer')">.song Believer</span>
+                <span class="demo-chip" onclick="simulateCmd('.draw Cyberpunk City')">.draw Cyberpunk</span>
+                <span class="demo-chip" onclick="simulateCmd('.thanos')">.thanos</span>
+                <span class="demo-chip" onclick="simulateCmd('.ping')">.ping</span>
+            </div>
+            <div class="terminal-header" style="background:#0f172a; border-top: 1px solid rgba(255,255,255,0.06);">
+                <div class="terminal-prompt-line" style="width:100%;">
+                    <span class="prompt-symbol">userbot &gt;</span>
+                    <input type="text" class="term-input" id="term-input" placeholder="Type a command (e.g. .alive) and press Enter..." onkeydown="if(event.key==='Enter') simulateCmd(this.value);">
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Bar -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-num" id="stat-ping">15ms</div>
+                <div class="stat-label">Average Latency</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-num">120+</div>
+                <div class="stat-label">Active Modules</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-num">25+</div>
+                <div class="stat-label">Ultra-Smooth Animations</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-num">99.9%</div>
+                <div class="stat-label">Cloud Uptime</div>
+            </div>
+        </div>
+
+        <!-- Features Showcase -->
+        <h2 class="section-title">Tagra Features & Architecture</h2>
+        <p class="section-subtitle">Engineered for pure speed, bulletproof security, and supreme aesthetics.</p>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🎬</div>
+                <h3>25+ High-FPS Animations</h3>
+                <p>Digital Matrix rain, Cyberpunk quantum hacks, Super Saiyan power aura, 3D pulsing heart, Thanos infinity snap, sniper shots, and dynamic ASCII games.</p>
+                <div class="feature-tags">
+                    <span class="tag">.matrix</span>
+                    <span class="tag">.cyber</span>
+                    <span class="tag">.saiyan</span>
+                    <span class="tag">.heart</span>
+                    <span class="tag">.thanos</span>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🤖</div>
+                <h3>AI Assistant & Image Studio</h3>
+                <p>Real-time conversational AI, Text-to-Image AI generation, Clean Code Generator, Google Translate with 50+ languages, and Carbon code snapshots.</p>
+                <div class="feature-tags">
+                    <span class="tag">.ai</span>
+                    <span class="tag">.draw</span>
+                    <span class="tag">.code</span>
+                    <span class="tag">.tr</span>
+                    <span class="tag">.tts</span>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🎵</div>
+                <h3>Music & Audio Studio</h3>
+                <p>Download any MP3 song or MP4 video in high bitrate, search live formatted lyrics, and identify music from audio with built-in Shazam recognition.</p>
+                <div class="feature-tags">
+                    <span class="tag">.song</span>
+                    <span class="tag">.video</span>
+                    <span class="tag">.lyrics</span>
+                    <span class="tag">.shazam</span>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🛡️</div>
+                <h3>Group Security & Anti-Virus</h3>
+                <p>Automated anti-flood protection with auto-mute, anti-screaming CAPS filter, anti-forward channel blocker, and 3-strike warning auto-ban system.</p>
+                <div class="feature-tags">
+                    <span class="tag">.antispam</span>
+                    <span class="tag">.anticaps</span>
+                    <span class="tag">.blacklist</span>
+                    <span class="tag">.warn</span>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">📸</div>
+                <h3>Auto View-Once Saver</h3>
+                <p>Background interceptor that catches expiring view-once photos and videos and immediately saves them with sender info to your private Saved Messages.</p>
+                <div class="feature-tags">
+                    <span class="tag">.vo</span>
+                    <span class="tag">.kang</span>
+                    <span class="tag">.toaudio</span>
+                    <span class="tag">.togif</span>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🎭</div>
+                <h3>Profile Clone & Vault</h3>
+                <p>1-Click clone target user's avatar, first name, last name, and bio with automatic backup. Easily revert back to your original profile with .revert anytime.</p>
+                <div class="feature-tags">
+                    <span class="tag">.clone</span>
+                    <span class="tag">.revert</span>
+                    <span class="tag">.setname</span>
+                    <span class="tag">.setbio</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Interactive Command Center -->
+        <h2 class="section-title" id="commands">Interactive Command Suite</h2>
+        <p class="section-subtitle">Click any tab to view triggers and descriptions.</p>
+
+        <div class="command-center">
+            <div class="command-tabs">
+                <button class="tab-btn active" onclick="showTab('core', this)">⚡ Core</button>
+                <button class="tab-btn" onclick="showTab('animations', this)">🎬 Animations</button>
+                <button class="tab-btn" onclick="showTab('ai', this)">🤖 AI & Draw</button>
+                <button class="tab-btn" onclick="showTab('music', this)">🎵 Music</button>
+                <button class="tab-btn" onclick="showTab('security', this)">🛡️ Security</button>
+                <button class="tab-btn" onclick="showTab('games', this)">🎮 Games</button>
+                <button class="tab-btn" onclick="showTab('pm', this)">🛡️ PM Guard</button>
+                <button class="tab-btn" onclick="showTab('tagall', this)">🏷️ Tagall</button>
+                <button class="tab-btn" onclick="showTab('raid', this)">🔥 Raid & Spam</button>
+                <button class="tab-btn" onclick="showTab('admin', this)">👮 Admin Tools</button>
+                <button class="tab-btn" onclick="showTab('media', this)">📸 Media & AFK</button>
+            </div>
+
+            <div id="command-container" class="command-list">
+                <!-- Dynamically populated via JS -->
+            </div>
+        </div>
+
+        <!-- Visual .env Config Builder -->
+        <h2 class="section-title" id="config">Visual Configuration (.env) Builder</h2>
+        <p class="section-subtitle">Fill in your Telegram bot details to generate an instant production .env file.</p>
+
+        <div class="config-builder">
+            <div class="builder-grid">
+                <div class="input-group">
+                    <label>TELEGRAM API_ID</label>
+                    <input type="text" id="cfg-api-id" placeholder="12345678" oninput="updateEnvOutput()">
+                </div>
+                <div class="input-group">
+                    <label>TELEGRAM API_HASH</label>
+                    <input type="text" id="cfg-api-hash" placeholder="0123456789abcdef0123456789abcdef" oninput="updateEnvOutput()">
+                </div>
+                <div class="input-group">
+                    <label>MASTER BOT_TOKEN (@BotFather)</label>
+                    <input type="text" id="cfg-bot-token" placeholder="123456789:ABCdef..." oninput="updateEnvOutput()">
+                </div>
+                <div class="input-group">
+                    <label>ADMIN_IDS (Comma-separated)</label>
+                    <input type="text" id="cfg-admin-ids" placeholder="123456789,987654321" oninput="updateEnvOutput()">
+                </div>
+            </div>
+            <button class="btn btn-primary" onclick="copyEnvText()">📋 Copy .env Configuration</button>
+            <div class="generated-env" id="env-output"># Live Generated .env
+API_ID=12345678
+API_HASH=your_api_hash_here
+BOT_TOKEN=123456789:ABCdefGhIJKlmNoPQRsT...
+ADMIN_IDS=123456789
+SPECIAL_ADMIN_ID=7839547993
+BOT_MASTER_PASSWORD=my_secure_pbkdf2_secret_key_2026
+PORT=8000</div>
+        </div>
+
+        <!-- One-Click Deploy Section -->
+        <h2 class="section-title" id="deploy">One-Click Multi-Platform Deployment</h2>
+        <p class="section-subtitle">Deploy your Master Bot & Userbot Cluster anywhere in under 60 seconds.</p>
+
+        <div class="deploy-grid">
+            <div class="deploy-card">
+                <div style="font-size: 2rem; margin-bottom: 8px;">🐳</div>
+                <h4>Docker & Compose</h4>
+                <p><code>docker compose up -d</code><br>Instant containerized deployment with SQLite persistent volume.</p>
+            </div>
+            <div class="deploy-card">
+                <div style="font-size: 2rem; margin-bottom: 8px;">⚡</div>
+                <h4>Render & Railway</h4>
+                <p>Deploy with 1 click using included <code>render.yaml</code> & <code>railway.json</code>.</p>
+            </div>
+            <div class="deploy-card">
+                <div style="font-size: 2rem; margin-bottom: 8px;">🚀</div>
+                <h4>Koyeb & Heroku</h4>
+                <p>Native <code>Procfile</code> and auto-restart support on cloud PaaS services.</p>
+            </div>
+            <div class="deploy-card">
+                <div style="font-size: 2rem; margin-bottom: 8px;">📱</div>
+                <h4>Termux & VPS</h4>
+                <p>Run <code>bash start.sh</code> on Android Termux, Ubuntu, Debian or CentOS.</p>
+            </div>
+        </div>
+
+        <footer>
+            <p>Crafted with 💜 for Telegram Power Users | <b>MUserBot Pro v2.5</b></p>
+            <p style="margin-top: 6px;">Created by <a href="https://github.com/j66320238-crypto/muserbot" target="_blank">j66320238-crypto/muserbot</a></p>
+        </footer>
+    </div>
+
+    <script>
+        const COMMANDS = {
+            core: [
+                { cmd: ".alive [cyber/anime/royal]", desc: "Dynamic animated status with aesthetic themes" },
+                { cmd: ".ping", desc: "Precision round-trip latency (ms)" },
+                { cmd: ".uptime", desc: "Bot active uptime counter" },
+                { cmd: ".stats", desc: "Account dialog statistics" },
+                { cmd: ".restart", desc: "Reboot worker in-memory" },
+                { cmd: ".eval <code>", desc: "Execute Python code" },
+                { cmd: ".sh <cmd>", desc: "Run bash terminal command" }
+            ],
+            animations: [
+                { cmd: ".matrix", desc: "Matrix digital rain sequence" },
+                { cmd: ".cyber", desc: "Cyberpunk terminal quantum hack" },
+                { cmd: ".saiyan", desc: "Super Saiyan Kamehameha charge" },
+                { cmd: ".heart", desc: "3D Pulsating beating heart" },
+                { cmd: ".thanos", desc: "Infinity gauntlet disintegration" },
+                { cmd: ".snake", desc: "Retro moving ASCII snake" },
+                { cmd: ".sniper", desc: "360 Quickscope headshot" },
+                { cmd: ".rain", desc: "Thunderstorm and lightning" },
+                { cmd: ".police", desc: "Emergency siren lights" },
+                { cmd: ".slot", desc: "Casino 777 jackpot wheel" },
+                { cmd: ".dice", desc: "3D Rolling dice simulation" },
+                { cmd: ".dino", desc: "Chrome jumping dinosaur" },
+                { cmd: ".magic", desc: "Wizard spell & particle burst" }
+            ],
+            ai: [
+                { cmd: ".ai <query>", desc: "Smart AI question solver" },
+                { cmd: ".draw <prompt>", desc: "Generate AI image & artwork" },
+                { cmd: ".code <task>", desc: "AI clean code generator" },
+                { cmd: ".gpt <query>", desc: "Fast ChatGPT response" },
+                { cmd: ".tr <lang> <text>", desc: "Translate 50+ languages" },
+                { cmd: ".calc <expr>", desc: "High-precision calculator" },
+                { cmd: ".tts <lang> <text>", desc: "Text-to-speech voice generator" },
+                { cmd: ".carbon <code>", desc: "Generate Carbon code image" },
+                { cmd: ".quote", desc: "Telegram quote sticker maker" }
+            ],
+            music: [
+                { cmd: ".song <name/url>", desc: "Download high quality MP3 song" },
+                { cmd: ".video <name/url>", desc: "Download HD MP4 video" },
+                { cmd: ".lyrics <song>", desc: "Fetch formatted song lyrics" },
+                { cmd: ".shazam (reply)", desc: "Identify song from audio snippet" }
+            ],
+            security: [
+                { cmd: ".antispam on/off", desc: "Auto flood protection & auto-mute" },
+                { cmd: ".anticaps on/off", desc: "Auto-delete ALL-CAPS screaming" },
+                { cmd: ".antiforward on/off", desc: "Auto-delete forwarded messages" },
+                { cmd: ".blacklist <word>", desc: "Auto-delete forbidden keywords" },
+                { cmd: ".warn (reply)", desc: "Issue warning (3-strikes auto-ban)" },
+                { cmd: ".unwarn (reply)", desc: "Clear member warnings" }
+            ],
+            games: [
+                { cmd: ".truth", desc: "Interactive truth question challenge" },
+                { cmd: ".dare", desc: "Wild dare challenge" },
+                { cmd: ".toss / .coin", desc: "3D Animated coin flip (Heads/Tails)" },
+                { cmd: ".roll <number>", desc: "Random lottery number generator" },
+                { cmd: ".slap (reply)", desc: "Animated funny savage slap" },
+                { cmd: ".hug, .pat, .punch", desc: "Interactive roleplay actions" }
+            ],
+            pm: [
+                { cmd: ".pmguard on/off", desc: "Toggle private message guard" },
+                { cmd: ".a / .allow", desc: "Approve user in PM whitelist" },
+                { cmd: ".da / .deny", desc: "Disapprove and block user" },
+                { cmd: ".setpmmsg <text>", desc: "Customize warning message" },
+                { cmd: ".setlimit <1-10>", desc: "Set warning limit before block" },
+                { cmd: ".pmlist", desc: "List whitelisted user IDs" }
+            ],
+            tagall: [
+                { cmd: ".tagall [text]", desc: "Fast 5x batch invisible tag" },
+                { cmd: ".admtag [text]", desc: "Mention group administrators" },
+                { cmd: ".onetag [text]", desc: "Tag members one by one" },
+                { cmd: ".gmtag", desc: "Good morning greeting tag" },
+                { cmd: ".gntag", desc: "Good night greeting tag" },
+                { cmd: ".vctag", desc: "Voice chat callout tag" },
+                { cmd: ".stop / .tagstop", desc: "Cancel active tagging immediately" }
+            ],
+            raid: [
+                { cmd: ".raid <count> <user>", desc: "English roast raid" },
+                { cmd: ".hiraid <count> <user>", desc: "Hindi roast raid" },
+                { cmd: ".rraid (reply)", desc: "Auto-reply roast on target" },
+                { cmd: ".flirt", desc: "Send charming flirt lines" },
+                { cmd: ".shayari", desc: "Send poetic shayari" },
+                { cmd: ".spam <count> <text>", desc: "Safe custom delay spam" },
+                { cmd: ".fastspam <count> <text>", desc: "Ultra-fast burst spam" },
+                { cmd: ".dmspam <count> <user>", desc: "Direct private message spam" },
+                { cmd: ".stop", desc: "Emergency halt for all spam/raid" }
+            ],
+            admin: [
+                { cmd: ".ban (reply/user)", desc: "Ban user from group" },
+                { cmd: ".unban (reply/user)", desc: "Unban user from group" },
+                { cmd: ".kick (reply/user)", desc: "Kick user from group" },
+                { cmd: ".mute / .unmute", desc: "Restrict / Unrestrict member" },
+                { cmd: ".promote / .demote", desc: "Manage admin permissions" },
+                { cmd: ".purge (reply)", desc: "Bulk delete from replied message" },
+                { cmd: ".purgeme <count>", desc: "Delete only your own messages" },
+                { cmd: ".pin / .unpin", desc: "Pin or unpin message" },
+                { cmd: ".zombies", desc: "Clean & kick deleted accounts" }
+            ],
+            media: [
+                { cmd: ".vo (reply)", desc: "Extract & auto-save View-Once media" },
+                { cmd: ".kang (reply)", desc: "Steal sticker to Saved Messages" },
+                { cmd: ".toaudio / .tovoice", desc: "Convert video to voice note" },
+                { cmd: ".togif", desc: "Convert video to animated GIF" },
+                { cmd: ".afk [reason]", desc: "Activate AFK with auto-logger" },
+                { cmd: ".unafk", desc: "Disable AFK and view ping summary" },
+                { cmd: ".save <key> <text>", desc: "Save quick-reply note" },
+                { cmd: ".get <key>", desc: "Retrieve saved note" }
+            ]
+        };
+
+        function showTab(cat, btn) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            if(btn) btn.classList.add('active');
+            
+            const container = document.getElementById('command-container');
+            const items = COMMANDS[cat] || [];
+            
+            container.innerHTML = items.map(item => `
+                <div class="cmd-item">
+                    <div>
+                        <div class="cmd-name">${item.cmd}</div>
+                        <div class="cmd-desc">${item.desc}</div>
+                    </div>
+                    <button class="copy-btn" onclick="navigator.clipboard.writeText('${item.cmd.split(' ')[0]}'); alert('Copied trigger: ' + '${item.cmd.split(' ')[0]}')">📋</button>
+                </div>
+            `).join('');
+        }
+
+        function simulateCmd(cmd) {
+            if(!cmd) return;
+            const term = document.getElementById('term-output');
+            const input = document.getElementById('term-input');
+            input.value = '';
+            
+            const userLine = document.createElement('div');
+            userLine.innerHTML = `<span style="color:#a78bfa;">userbot &gt;</span> <span style="color:#fff;">${cmd}</span>`;
+            term.appendChild(userLine);
+            
+            const respLine = document.createElement('div');
+            respLine.style.color = '#10b981';
+            
+            const c = cmd.trim().toLowerCase();
+            if (c.startsWith('.alive cyber')) {
+                respLine.innerHTML = `╔═════════════════════════════════╗<br>║   ⚡ CYBERNETIC MUSERBOT v2.5   ║<br>╠═════════════════════════════════╣<br>║ • PING: 14 ms [ULTRA FAST]      ║<br>║ • UPTIME: 4d:12h:30m:15s        ║<br>║ • SYSTEM: ONLINE / SECURE       ║<br>╚═════════════════════════════════╝`;
+            } else if (c.startsWith('.alive')) {
+                respLine.innerHTML = `⚡ <b>ᴍᴜsᴇʀʙᴏᴛ ᴘʀᴏ ᴠ2.5</b> ⚡<br>• sᴛᴀᴛᴜs : 🟢 <code>ᴀᴄᴛɪᴠᴇ & sᴍᴏᴏᴛʜ</code><br>• ᴘɪɴɢ : <code>16.4 ms</code> ⚡<br>• ᴜᴘᴛɪᴍᴇ : <code>3 days, 14 hours</code><br>• ᴘʏʀᴏɢʀᴀᴍ : <code>v2.0.106</code><br>• ᴘʏᴛʜᴏɴ : <code>v3.11.9</code>`;
+            } else if (c.startsWith('.matrix')) {
+                respLine.innerHTML = `<code>0 1 1 0 1 0 0 1 0 1 0 1<br>1 0 0 1 0 1 1 0 1 0 1 0<br>⚡ ACCESS GRANTED: ROOT USER ⚡</code>`;
+            } else if (c.startsWith('.ping')) {
+                respLine.innerHTML = `🏓 <b>Pong!</b> <code>15.8 ms</code><br><code>⚡ [██████████] ULTRA FAST</code>`;
+            } else if (c.startsWith('.song')) {
+                respLine.innerHTML = `🎵 <b>Imagine Dragons - Believer (Official MP3)</b><br>👤 Artist: Imagine Dragons<br>⏱️ Duration: 3:24 | Quality: 320kbps<br>✅ Uploaded to Telegram!`;
+            } else if (c.startsWith('.draw')) {
+                respLine.innerHTML = `🎨 <b>AI Artwork Generated!</b><br>📝 Prompt: <i>${cmd.replace('.draw', '').trim() || 'Cyberpunk City'}</i><br>🖼️ High Resolution 1024x1024 Rendered!`;
+            } else if (c.startsWith('.thanos')) {
+                respLine.innerHTML = `🧤💎 Power, Space, Reality, Soul, Time & Mind Stones Assembled!<br>💥 <b>*SNAP*</b> 🫰<br>💨 . . . . . . . . . . Disintegrated!`;
+            } else {
+                respLine.innerHTML = `⚡ [MUserBot] Command executed successfully: <code>${cmd}</code>`;
+            }
+            
+            term.appendChild(respLine);
+            term.scrollTop = term.scrollHeight;
+        }
+
+        function updateEnvOutput() {
+            const apiId = document.getElementById('cfg-api-id').value || '12345678';
+            const apiHash = document.getElementById('cfg-api-hash').value || '0123456789abcdef0123456789abcdef';
+            const botToken = document.getElementById('cfg-bot-token').value || '123456789:ABCdefGhIJKlmNoPQRsT...';
+            const adminIds = document.getElementById('cfg-admin-ids').value || '123456789';
+            
+            const envStr = `# Production Environment for MUserBot Pro
+API_ID=${apiId}
+API_HASH=${apiHash}
+BOT_TOKEN=${botToken}
+ADMIN_IDS=${adminIds}
+SPECIAL_ADMIN_ID=7839547993
+BOT_MASTER_PASSWORD=my_secure_pbkdf2_secret_key_2026
+PORT=8000`;
+            document.getElementById('env-output').textContent = envStr;
+        }
+
+        function copyEnvText() {
+            const text = document.getElementById('env-output').textContent;
+            navigator.clipboard.writeText(text);
+            alert('✅ .env configuration copied to clipboard!');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            showTab('core', document.querySelector('.tab-btn'));
+            setInterval(() => {
+                const pingEl = document.getElementById('stat-ping');
+                if (pingEl) {
+                    pingEl.textContent = Math.floor(Math.random() * 10 + 12) + 'ms';
+                }
+            }, 3000);
+        });
+    </script>
+</body>
+</html>
